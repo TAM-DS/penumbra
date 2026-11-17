@@ -33,7 +33,7 @@
   function initGraph() {
     if (!window.cytoscape) { $("#empty").querySelector(".sub").textContent = "Graph library failed to load (offline?). The reasoning stream and approvals still work."; return; }
     cy = cytoscape({
-      container: $("#cy"), wheelSensitivity: 0.25, minZoom: 0.25, maxZoom: 2.5,
+      container: $("#cy"), minZoom: 0.25, maxZoom: 2.5,
       style: [
         { selector: "node", style: {
             "background-color": "data(color)", "shape": "data(shape)", "width": "data(size)", "height": "data(size)",
@@ -88,7 +88,8 @@
     clearTimeout(layoutTimer);
     layoutTimer = setTimeout(() => {
       cy.layout({ name: "cose", animate: true, animationDuration: 600, randomize: false, fit: true, padding: 40,
-        nodeRepulsion: () => 14000, idealEdgeLength: () => 95, gravity: 0.35, numIter: 900 }).run();
+        nodeRepulsion: () => 14000, idealEdgeLength: () => 95, gravity: 0.35, numIter: 900,
+        stop: () => { if (cy.zoom() > 1.15) { cy.zoom(1.15); cy.center(); } } }).run();
     }, 450);
   }
 

@@ -28,13 +28,24 @@ from .agents.osint import OsintAgent
 from .agents.toolkit import build_registry
 from .agents.triage import TriageAgent
 from .context import InvestigationContext
-from .events import EventBus
+from .events import EventBus, RedisStreamBus
 from .guardrails import AuditLog, PolicyContext, PolicyGate, Quarantine, ToolRegistry
+from .guardrails.policy import OPAPolicyGate
 from .hitl.approvals import ApprovalQueue
 from .memory import KnowledgeStore, Scratchpad, TemporalGraph
 from .report import build_brief, learn
 from .telemetry import generate, world
 from .telemetry.scenario import WINDOW_START
+
+
+def _make_graph() -> TemporalGraph:
+    uri = os.environ.get("PENUMBRA_NEO4J_URI")
+    if not uri:
+        return TemporalGraph()
+    from .memory.graph import Neo4jGraph
+
+    user, _, pw = os.environ.get("PENUMBRA_NEO4J_AUTH", "neo4j/neo4j").partition("/")
+    return Neo4jGraph(uri, user, pw)
 
 
 def default_backend() -> str:
@@ -59,12 +70,13 @@ class Investigation:
         principals = set(world.EMPLOYEES) | set(world.SERVICE_ACCOUNTS)
         self.ctx = InvestigationContext(
             investigation_id=self.id, events=events, window_start=WINDOW_START,
-            graph=TemporalGraph(), scratchpad=Scratchpad(self.id), knowledge=KnowledgeStore(),
+            graph=_make_graph(), scratchpad=Scratchpad(self.id), knowledge=KnowledgeStore(),
             quarantine=Quarantine(enabled=not red_team, known_principals=principals),
             registry=ToolRegistry(), audit=AuditLog(run_dir / "audit.jsonl" if run_dir else None),
             emit=self.emit, backend=backend or default_backend(), pace=pace, red_team=red_team)
         self.ctx.registry = build_registry(self.ctx)
-        self.gate = PolicyGate(PolicyContext(
+        gate_cls = OPAPolicyGate if os.environ.get("PENUMBRA_OPA_URL") else PolicyGate
+        self.gate = gate_cls(PolicyContext(
             registry=self.ctx.registry, is_tainted=self.ctx.quarantine.is_tainted,
             source_of=self.ctx.source_of,
             protected_principals={u for u, e in world.EMPLOYEES.items() if e.protected},
@@ -99,7 +111,8 @@ class Investigation:
     # ------------------------------------------------------------------ run
     async def ingest(self) -> None:
         self._set_status("ingesting")
-        bus = EventBus()
+        url = os.environ.get("PENUMBRA_REDIS_URL")
+        bus = RedisStreamBus(url, f"penumbra:{self.id}") if url else EventBus()
         await bus.publish_many(self.ctx.events)
         await bus.close()
         counts: dict[str, int] = {}

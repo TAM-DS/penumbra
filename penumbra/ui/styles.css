@@ -127,10 +127,10 @@ select, .btn { font: 500 12.5px var(--sans); color: var(--text); background: var
 .sanitized { white-space: pre-wrap; font: 11px var(--mono); background: var(--bg); border: 1px solid var(--line); padding: 8px; border-radius: 6px; color: var(--muted); }
 
 .timeline { list-style: none; margin: 0; padding: 18px 24px; position: relative; }
-.timeline::before { content: ""; position: absolute; left: 132px; top: 18px; bottom: 18px; width: 1px; background: var(--line2); }
-.timeline li { display: grid; grid-template-columns: 110px 1fr; gap: 28px; padding: 9px 0; position: relative; }
-.timeline li::before { content: ""; position: absolute; left: 104px; top: 15px; width: 9px; height: 9px; border-radius: 50%; background: var(--corona); box-shadow: 0 0 0 3px var(--bg); }
-.timeline .t { font: 11.5px var(--mono); color: var(--muted); text-align: right; }
+.timeline::before { content: ""; position: absolute; left: 141px; top: 18px; bottom: 18px; width: 1px; background: var(--line2); }
+.timeline li { display: grid; grid-template-columns: 100px 1fr; gap: 36px; padding: 9px 0; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: 113px; top: 15px; width: 9px; height: 9px; border-radius: 50%; background: var(--corona); box-shadow: 0 0 0 3px var(--bg); }
+.timeline .t { font: 11.5px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
 .timeline .s { font-weight: 500; }
 .timeline .m { font: 11px var(--mono); color: var(--dim); }
 .ttp { display: inline-block; font: 10px var(--mono); padding: 1px 5px; border: 1px solid var(--line2); border-radius: 4px; margin-right: 4px; color: var(--muted); }

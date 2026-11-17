@@ -118,13 +118,16 @@ class RedisStreamBus(EventBus):  # pragma: no cover - requires a Redis server
         await self._r.xadd(self._stream, {"event": event.to_json()})
 
     async def close(self) -> None:
-        await self._r.aclose()
+        # End-of-stream is detected by an empty blocking read in consume();
+        # the connection stays open until consumption finishes.
+        return None
 
     async def consume(self) -> AsyncIterator[Event]:
         last = "0-0"
         while True:
             resp = await self._r.xread({self._stream: last}, block=5000, count=200)
             if not resp:
+                await self._r.aclose()
                 return
             for _stream, entries in resp:
                 for entry_id, fields in entries:
