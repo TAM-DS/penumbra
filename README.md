@@ -22,7 +22,8 @@
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="docs/THREAT_MODEL.md">Threat model</a> ·
   <a href="docs/ADAPTING.md">Adapt it</a> ·
-  <a href="docs/RESPONSIBLE_USE.md">Responsible use</a>
+  <a href="docs/RESPONSIBLE_USE.md">Responsible use</a> ·
+  <a href="#why-penumbra-a-note-from-the-builder">Why "Penumbra"</a>
 </p>
 
 ---
@@ -300,6 +301,16 @@ CI runs them on Python 3.11, 3.12 and 3.13. It also runs both demos headless, ve
 ## Responsible use
 
 Penumbra ships **no scrapers**. The dark-web and OSINT layer is simulated on purpose. Real collection carries legal and ethical obligations (computer-misuse law, platform terms, GDPR and works-council rules for employee monitoring) that belong to counsel, not to a GitHub repo. Insider-risk tooling can harm innocent people, which is why this design never auto-acts on a person, records every dismissal and finding with its evidence, and keeps HR and Legal in the loop. Read **[RESPONSIBLE_USE.md](docs/RESPONSIBLE_USE.md)** before pointing it at real telemetry. Security issues: see **[SECURITY.md](SECURITY.md)**.
+
+## Why "Penumbra": a note from the builder
+
+**The name comes from Kepler.** Johannes Kepler coined the term *penumbra* in 1604, in his work on optics (*Astronomiae Pars Optica*), to describe the partial shadow cast during an eclipse: the zone that is neither fully lit nor fully dark. I've been a fan of Kepler for a long time. At Harvard I wrote a paper on his theory of the *music of the spheres* (*Harmonices Mundi*, 1619): the idea that the universe runs on a hidden harmony you can only hear if you look at the whole system at once. That's how I think about security architecture. No single signal tells the story; the pattern does. And the threats that matter live in the penumbra, in the gray zone between normal and breach.
+
+**The moon has two sides, and so do I.** One side is the extrovert who can work and talk with anyone: executives, engineers, legal, HR, the people who have to live with the system. The other is the introvert who can get lost in a project for hours, forgetting everything until it works. Penumbra needed both: the five-layer architecture came from talking through how real security operations, compliance and people actually work, and the code came from long hours of building until it held up under attack.
+
+**This project closes a loop.** I started my career on the security side. In 2017 I was writing [*Hacking The Human*](https://cyberessentialsdotblog.wordpress.com/) (*"Cybersecurity is a shared responsibility. Stop. Think. Connect."*) about insider threats, social engineering and cybercrime-as-a-service. Those are the same threats Operation Low Tide is built from, now amplified by AI. Today I build agentic AI systems. Penumbra is where the two halves meet: **security and building things that work**, at the moment when organizations need agents that defend them, and need those agents to be defensible themselves.
+
+— Tracy
 
 ## License and author
 
