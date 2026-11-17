@@ -305,4 +305,4 @@ Penumbra ships **no scrapers**. The dark-web and OSINT layer is simulated on pur
 
 Apache-2.0. Clone it and adapt it to your own threat surface; every organization's is different.
 
-Built by **Tracy Manning** · AI Architect · Apex AI|ML Engineering · [LinkedIn](https://www.linkedin.com/in/tracymanning/)
+Built by **Tracy Manning** · AI Solutions Engineering & Technical Sales · Enterprise Discovery to Deployment · Advisory & Governance · Apex AI|ML Engineering · [LinkedIn](https://www.linkedin.com/in/tracymanning/)
