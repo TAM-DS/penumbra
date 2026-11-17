@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "penumbra"
+version = "0.1.0"
+description = "Agentic AI counterintelligence: multi-agent investigation with zero-trust guardrails and human-in-the-loop containment."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Tracy Manning", email = "tmanning@post.harvard.edu" }]
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn>=0.29",
+  "cryptography>=42",
+]
+keywords = ["security", "agentic-ai", "counterintelligence", "insider-threat", "prompt-injection", "llm", "claude"]
+
+[project.optional-dependencies]
+claude = ["anthropic>=0.40"]
+neo4j = ["neo4j>=5.20"]
+redis = ["redis>=5.0"]
+dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.5"]
+
+[project.scripts]
+penumbra = "penumbra.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["penumbra*"]
+
+[tool.setuptools.package-data]
+penumbra = ["ui/*", "ui/vendor/*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "PLE"]
+ignore = ["E501", "B008", "E741", "E731", "UP042"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

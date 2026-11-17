@@ -1,0 +1,39 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev]"
+      - run: ruff check penumbra tests
+      - run: pytest -q
+      - name: Headless demo (offline backend) + verify signed audit
+        run: |
+          penumbra demo --auto-approve --out runs > demo.log
+          tail -3 demo.log
+          penumbra verify-audit runs/*/audit.jsonl
+      - name: Red-team demo must stay contained
+        run: penumbra demo --red-team --auto-approve --out runs-red | grep -q "DENIED"
+  opa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+      - run: opa check policies/
+      - run: |
+          echo '{"request":{"tool":"allowlist_domain","evidence":["e1"],"confidence":0.99},"tainted":["e1"]}' > in.json
+          opa eval -d policies/ -i in.json 'data.penumbra.allow' --format raw | grep -q false
