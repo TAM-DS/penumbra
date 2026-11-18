@@ -1,4 +1,10 @@
+from datetime import UTC, datetime
+from unittest.mock import patch
+
+import pytest
+
 from penumbra.guardrails import Tier
+from penumbra.guardrails.audit import verify_file
 
 from .conftest import run_inv
 
@@ -80,3 +86,26 @@ def test_red_team_hijack_is_contained_by_code_not_by_the_model():
 def test_deterministic_across_runs():
     a, b = run_inv(), run_inv()
     assert [f.title for f in a.ctx.scratchpad.findings] == [f.title for f in b.ctx.scratchpad.findings]
+
+
+def test_same_second_investigations_preserve_both_audits(tmp_path):
+    with patch("penumbra.engine.datetime", wraps=datetime) as clock:
+        clock.now.return_value = datetime(2026, 11, 18, tzinfo=UTC)
+        first = run_inv(runs_root=tmp_path)
+        audit = first.run_dir / "audit.jsonl"
+        original = audit.read_bytes()
+        second = run_inv(runs_root=tmp_path)
+    assert first.id != second.id
+    assert audit.read_bytes() == original
+    assert verify_file(audit).ok
+    assert verify_file(second.run_dir / "audit.jsonl").ok
+
+
+def test_explicit_run_directory_preserves_existing_evidence(tmp_path):
+    run_inv(run_dir=tmp_path)
+    audit = tmp_path / "audit.jsonl"
+    original = audit.read_bytes()
+    with pytest.raises(FileExistsError):
+        run_inv(run_dir=tmp_path)
+    assert audit.read_bytes() == original
+    assert verify_file(audit).ok

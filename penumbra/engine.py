@@ -20,6 +20,7 @@ import os
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from .agents.deception import DeceptionAgent
 from .agents.forensics import ForensicsAgent
@@ -55,16 +56,19 @@ def default_backend() -> str:
 class Investigation:
     def __init__(self, backend: str | None = None, red_team: bool = False, pace: float = 0.0,
                  seed: int = 7, run_dir: Path | None = None, runs_root: Path | None = None) -> None:
-        self.id = "INV-" + datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+        self.id = f"INV-{datetime.now(UTC):%Y%m%d-%H%M%S}-{uuid4().hex}"
         if runs_root is not None and run_dir is None:
             run_dir = Path(runs_root) / self.id
+            run_dir.mkdir(parents=True)
+        elif run_dir is not None:
+            run_dir.mkdir(parents=True, exist_ok=True)
+            if any(run_dir.iterdir()):
+                raise FileExistsError(f"Investigation directory must be empty: {run_dir}")
         self.status = "created"
         self.log: list[dict[str, Any]] = []
         self.subscribers: set[asyncio.Queue] = set()
         self.report: str | None = None
         self.run_dir = run_dir
-        if run_dir:
-            run_dir.mkdir(parents=True, exist_ok=True)
 
         events = generate(seed)
         principals = set(world.EMPLOYEES) | set(world.SERVICE_ACCOUNTS)

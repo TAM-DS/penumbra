@@ -54,7 +54,7 @@ class AuditLog:
         self._lock = threading.Lock()
         if path:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("")
+            path.touch(exist_ok=False)
             (path.parent / "audit.pub").write_text(self.public_key_hex)
 
     @property

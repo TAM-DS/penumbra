@@ -23,7 +23,7 @@
   <a href="docs/THREAT_MODEL.md">Threat model</a> ·
   <a href="docs/ADAPTING.md">Adapt it</a> ·
   <a href="docs/RESPONSIBLE_USE.md">Responsible use</a> ·
-  <a href="#why-penumbra-a-note-from-the-builder">Why "Penumbra"</a>
+  <a href="#why-i-named-it-penumbra">Why "Penumbra"</a>
 </p>
 
 ---
@@ -94,7 +94,7 @@ Seconds in, the quarantine fires: the phishing email sent to the IT admin carrie
 
 Click any node to inspect it. On the injection node you see all 11 detections across two hidden channels (an HTML comment and white-on-white CSS text), and then **exactly what the agent was allowed to see**: the sanitized, spotlighted text, with every directive gone.
 
-The investigation produces a **calibrated hypothesis (0.86)** and a containment plan in the **Tactical Approval Queue**. Each card shows the action, the justification, the evidence IDs, and a **counterfactual blast radius** before anyone clicks. For example: *"revoking this key halts 0 pipelines; disabling the whole service account would halt 3."* Suspending a person is tier **DUAL**: it needs two different authorized humans (here, 1/2 approvals given).
+The investigation produces a **calibrated hypothesis (0.86)** and a containment plan in the **Tactical Approval Queue**. Each card shows the action, the justification, the evidence IDs, and a **counterfactual blast radius** before anyone clicks. For example: *"revoking this key halts 0 pipelines; disabling the whole service account would halt 3."* Suspending a person is tier **DUAL**: the demo requires two distinct authorized approver IDs (here, 1/2 approvals given). The operator selects simulated identities. Binding each approval to an authenticated person through SSO is on the roadmap.
 
 ### 3 · Built to be attacked
 
@@ -121,7 +121,7 @@ The Lead Investigator assembles the kill chain from every agent's findings. Each
 
 <img src="docs/img/05-brief.png" alt="After-action brief" width="100%"/>
 
-When the last card is resolved, a reporting step compiles the **after-action brief**: the bottom line, key judgments with confidence, timeline, technique mapping, containment and who approved it, guardrail activity, false positives suppressed, contradiction checks and follow-ups. The lessons are written back to the knowledge store, so the next investigation starts smarter.
+When the last card is resolved, a reporting step compiles the **after-action brief**: the bottom line, key judgments with confidence, timeline, technique mapping, containment and who approved it, guardrail activity, false positives suppressed, contradiction checks and follow-ups. The after-action brief records lessons for the next investigation. Each run starts with a fresh, seeded knowledge store.
 
 ### 6 · Proof, not promises
 
@@ -267,7 +267,7 @@ penumbra/
   report.py            after-action brief + learning loop
   server.py, ui/       FastAPI + SSE tactical workspace (no build step, vendored JS)
 policies/penumbra.rego OPA mirror of the gate
-tests/                 47 tests
+tests/                 49 tests
 docs/                  architecture · threat model · adapting · responsible use
 ```
 
@@ -277,7 +277,7 @@ docs/                  architecture · threat model · adapting · responsible u
 pip install -e ".[dev]" && pytest -q
 ```
 
-47 tests, covering:
+49 tests, covering:
 - quarantine detection and stripping across every hidden channel
 - every policy rule, including taint provenance and the two-person rule
 - audit tamper detection: edit, delete, and re-hash without the key
@@ -302,13 +302,13 @@ CI runs them on Python 3.11, 3.12 and 3.13. It also runs both demos headless, ve
 
 Penumbra ships **no scrapers**. The dark-web and OSINT layer is simulated on purpose. Real collection carries legal and ethical obligations (computer-misuse law, platform terms, GDPR and works-council rules for employee monitoring) that belong to counsel, not to a GitHub repo. Insider-risk tooling can harm innocent people, which is why this design never auto-acts on a person, records every dismissal and finding with its evidence, and keeps HR and Legal in the loop. Read **[RESPONSIBLE_USE.md](docs/RESPONSIBLE_USE.md)** before pointing it at real telemetry. Security issues: see **[SECURITY.md](SECURITY.md)**.
 
-## Why "Penumbra": a note from the builder
+## Why I named it Penumbra
 
-**The name comes from Kepler.** Johannes Kepler coined the term *penumbra* in 1604, in his work on optics (*Astronomiae Pars Optica*), to describe the partial shadow cast during an eclipse: the zone that is neither fully lit nor fully dark. I've been a fan of Kepler for a long time. At Harvard I wrote a paper on his theory of the *music of the spheres* (*Harmonices Mundi*, 1619): the idea that the universe runs on a hidden harmony you can only hear if you look at the whole system at once. That's how I think about security architecture. No single signal tells the story; the pattern does. And the threats that matter live in the penumbra, in the gray zone between normal and breach.
+**The name comes from Kepler.** In 1604, Johannes Kepler coined *penumbra* for the partial shadow cast during an eclipse. Years later, at Harvard, I wrote a paper on his *Harmonices Mundi* and the musical relationships he saw in the motions of the planets. What stayed with me was the way he looked for a pattern across a whole system. That’s how I think about security. In Penumbra, a login from Berlin looks suspicious until someone checks the travel record. A new access key looks routine until an investigator follows what it was used to read.
 
-**The moon has two sides, and so do I.** One side is the extrovert who can work and talk with anyone: executives, engineers, legal, HR, the people who have to live with the system. The other is the introvert who can get lost in a project for hours, forgetting everything until it works. Penumbra needed both: the five-layer architecture came from talking through how real security operations, compliance and people actually work, and the code came from long hours of building until it held up under attack.
+**The moon has two sides, and so do I.** I’m the extrovert who wants executives, engineers, Legal, HR, and the people on call in the conversation. I’m also the introvert who can lose an afternoon following one decision through the code. Penumbra needed both sides of me. One asked, “Who should have the authority to suspend someone?” The other wrote the test that makes sure the same approver can’t sign twice.
 
-**This project closes a loop.** I started my career on the security side. In 2017 I was writing [*Hacking The Human*](https://cyberessentialsdotblog.wordpress.com/) (*"Cybersecurity is a shared responsibility. Stop. Think. Connect."*) about insider threats, social engineering and cybercrime-as-a-service. Those are the same threats Operation Low Tide is built from, now amplified by AI. Today I build agentic AI systems. Penumbra is where the two halves meet: **security and building things that work**, at the moment when organizations need agents that defend them, and need those agents to be defensible themselves.
+**This project closes a loop.** I started my career in security. In 2017, I was writing [*Hacking The Human*](https://cyberessentialsdotblog.wordpress.com/) about insider threats, social engineering, and cybercrime-as-a-service. Today I build agentic AI systems. Operation Low Tide brings those two parts of my career together. The phishing email in this case has two audiences. One is the employee who receives it. The other is the AI investigator that reads it later. I built Penumbra because I wanted to be able to show what that investigator saw, what it tried to do, and who had the authority to act.
 
 — Tracy
 
